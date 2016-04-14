@@ -2,7 +2,7 @@
 
 static pid_t child_pid;
 
-int syscall_wait(pid_t pid)
+int syscall_wait(pid_t pid, int *exit_status)
 {
   int status;
   int sig;
@@ -12,7 +12,10 @@ int syscall_wait(pid_t pid)
     ptrace(PTRACE_SYSCALL, pid, 0, 0);
     wait(&status);
     if (WIFEXITED(status) || WIFSIGNALED(status))
+    {
+      *exit_status = WEXITSTATUS(status);
       return (1);
+    }
     if (WIFSTOPPED(status))
     {
       if ((sig = WSTOPSIG(status)) == SIGALRM)
@@ -37,9 +40,13 @@ static void signal_handler(int sig)
 void parent_launch(pid_t pid)
 {
   struct user_regs_struct regs;
+  int calling;
+  int exit_status;
   int syscall_id;
 
   child_pid = pid;
+  calling = 0;
+  exit_status = 0;
   signal(SIGINT, signal_handler);
   if (ptrace(PTRACE_SEIZE, pid, 0, PTRACE_O_TRACESYSGOOD) == -1)
   {
@@ -55,8 +62,9 @@ void parent_launch(pid_t pid)
   }
   while (1)
   {
-    if (syscall_wait(pid))
+    if (syscall_wait(pid, &exit_status))
       break;
+    calling = 1;
     if (ptrace(PTRACE_GETREGS, pid, 0, &regs) == -1)
     {
       ft_putendl_fd("PTRACE_GETREGSET failed", 2);
@@ -103,7 +111,7 @@ void parent_launch(pid_t pid)
         }
       }
     }
-    if (syscall_wait(pid))
+    if (syscall_wait(pid, &exit_status))
       break;
     if (ptrace(PTRACE_GETREGS, pid, 0, &regs) == -1)
     {
@@ -116,5 +124,9 @@ void parent_launch(pid_t pid)
     ft_putchar('\n');
     ptrace(PTRACE_CONT, pid, 0);
   }
-  ft_putendl("Exited");
+  if (calling)
+    ft_putendl(") = ?");
+  ft_putstr("+++ exited with ");
+  ft_putnbr(exit_status);
+  ft_putendl(" +++");
 }
