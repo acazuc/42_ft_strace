@@ -37,5 +37,7 @@ void signals_init(void);
 char *signals_get(int sig);
 void sig_handler(pid_t pid, int sig);
 void sigalrm_handler(pid_t pid);
+void print_args(int args_nb, struct user_regs_struct *regs);
+void ptrace_assert(enum __ptrace_request request, pid_t pid, void *addr, void *data, char *str);
 
 #endif

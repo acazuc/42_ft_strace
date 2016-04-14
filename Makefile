@@ -30,6 +30,8 @@ SRCS_NAME = main.c \
 			signals_init.c \
 			signals_get.c \
 			signal_handlers.c \
+			print_funcs.c \
+			ptrace_assert.c \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
