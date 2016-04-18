@@ -33,6 +33,7 @@ int main(int ac, char **av, char **ev)
   {
     syscalls_init();
     signals_init();
+    errno_init();
     parent_launch(pid);
   }
 }

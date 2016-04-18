@@ -32,11 +32,12 @@ int syscall_wait(pid_t pid, int *exit_status)
 static void signal_handler(int sig)
 {
   (void)sig;
-  kill(child_pid, SIGINT);
   ft_putstr("Process ");
   ft_putnbr(child_pid);
   ft_putendl(" detached");
+  kill(child_pid, SIGINT);
   killed = 1;
+  ptrace_assert(PTRACE_DETACH, child_pid, 0, 0, "PTRACE_DETACH");
 }
 
 void parent_launch(pid_t pid)
@@ -58,32 +59,49 @@ void parent_launch(pid_t pid)
     if (syscall_wait(pid, &exit_status))
       break;
     calling = 1;
-    ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
     if (!killed)
     {
+      ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
       syscall_id = regs.orig_rax;
+      ft_putstr("\033[1;35m");
       ft_putstr(syscalls_get_name(syscall_id));
+      ft_putstr("\033[1;37m");
       ft_putstr("(");
       args_nb = syscalls_get_args(syscall_id);
       if (args_nb == 0)
         ft_putstr("void");
       else
         print_args(args_nb, &regs);
-    }
-    if (syscall_wait(pid, &exit_status))
-      break;
-    ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
-    if (!killed)
-    {
-      ft_putstr(") = ");
-      ft_putnbr(regs.rax);
-      ft_putchar('\n');
+      if (syscall_wait(pid, &exit_status))
+        break;
+      if (!killed)
+      {
+        ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
+        ft_putstr("\033[1;37m) = ");
+        if ((long long)regs.rax < 0)
+        {
+          ft_putstr("\033[1;31m");
+          ft_putnbr(regs.rax);
+          ft_putchar(' ');
+          ft_putstr(errno_get_name(-regs.rax));
+          ft_putstr(" (");
+          ft_putstr(errno_get_desc(-regs.rax));
+          ft_putstr(")");
+        }
+        else
+        {
+          ft_putstr("\033[1;32m");
+          ft_putnbr(regs.rax);
+        }
+        ft_putstr("\033[0;37m");
+        ft_putchar('\n');
+      }
     }
   }
   if (killed)
     return;
   if (calling)
-    ft_putendl(") = ?");
+    ft_putendl("\033[1;37m) = ?");
   ft_putstr("+++ exited with ");
   ft_putnbr(exit_status);
   ft_putendl(" +++");

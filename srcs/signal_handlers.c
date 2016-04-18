@@ -21,10 +21,13 @@ static void continue_ptrace(pid_t pid, int sig)
 
 void sig_handler(pid_t pid, int sig)
 {
-  continue_ptrace(pid, sig);
+  siginfo_t siginfo;
+
   if (killed)
     return;
   ft_putstr("--- ");
+  ptrace_assert(PTRACE_GETSIGINFO, pid, NULL, &siginfo, "PTRACE_GETSIGINFO");
   ft_putstr(signals_get(sig));
-  ft_putstr(" ---\n");
+  printf(" { si_signo=%s, si_code=%d, si_pid=%d, si_uid=%d} ---\n", signals_get(sig), siginfo.si_code, siginfo.si_pid, siginfo.si_uid);
+  continue_ptrace(pid, sig);
 }

@@ -14,6 +14,7 @@
 
 typedef struct s_syscall t_syscall;
 typedef struct s_signal t_signal;
+typedef struct s_errno t_errno;
 
 struct s_syscall
 {
@@ -24,6 +25,13 @@ struct s_syscall
 struct s_signal
 {
   char *name;
+};
+
+struct s_errno
+{
+  int value;
+  char *name;
+  char *desc;
 };
 
 void print_help(void);
@@ -39,5 +47,8 @@ void sig_handler(pid_t pid, int sig);
 void sigalrm_handler(pid_t pid);
 void print_args(int args_nb, struct user_regs_struct *regs);
 void ptrace_assert(enum __ptrace_request request, pid_t pid, void *addr, void *data, char *str);
+void errno_init(void);
+char *errno_get_name(int errno);
+char *errno_get_desc(int errno);
 
 #endif
