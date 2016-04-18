@@ -81,7 +81,7 @@ void parent_launch(pid_t pid)
         if ((long long)regs.rax < 0)
         {
           ft_putstr("\033[1;31m");
-          ft_putnbr(regs.rax);
+          ft_putnbr(-1);
           ft_putchar(' ');
           ft_putstr(errno_get_name(-regs.rax));
           ft_putstr(" (");
