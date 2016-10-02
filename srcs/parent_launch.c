@@ -1,9 +1,9 @@
 #include "ft_strace.h"
 
-static pid_t child_pid;
+pid_t child_pid;
 int killed = 0;
 
-int syscall_wait(pid_t pid, int *exit_status)
+int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 {
   int status;
   int sig;
@@ -14,6 +14,7 @@ int syscall_wait(pid_t pid, int *exit_status)
     wait(&status);
     if (WIFEXITED(status) || WIFSIGNALED(status))
     {
+    	*exit_return = status;
       *exit_status = WEXITSTATUS(status);
       return (1);
     }
@@ -43,6 +44,7 @@ void parent_launch(pid_t pid)
 {
   struct user_regs_struct regs;
   int calling;
+  int exit_return;
   int exit_status;
   int syscall_id;
   int args_nb;
@@ -55,7 +57,7 @@ void parent_launch(pid_t pid)
   ptrace_assert(PTRACE_INTERRUPT, pid, 0, 0, "PTRACE_INTERRUPT");
   while (1)
   {
-    if (syscall_wait(pid, &exit_status))
+    if (syscall_wait(pid, &exit_status, &exit_return))
       break;
     calling = 1;
     if (!killed)
@@ -69,8 +71,8 @@ void parent_launch(pid_t pid)
       	if (args_nb == 0)
       	  printf("void");
       	else
-      	  print_args(args_nb, &regs);
-      	if (syscall_wait(pid, &exit_status))
+      	  print_args(args_nb, &regs, syscalls_get(syscall_id));
+      	if (syscall_wait(pid, &exit_status, &exit_return))
       	  break;
       	if (!killed)
       	{
@@ -90,6 +92,14 @@ void parent_launch(pid_t pid)
     return;
   if (calling)
     printf("\033[1;37m) = ?\n");
-  printf("+++ exited with %d +++\n", exit_status);
+  if (WIFEXITED(exit_return))
+  	printf("+++ exited with %d +++\n", exit_status);
+  else if (WIFSIGNALED(exit_return))
+  {
+	if (WCOREDUMP(exit_return))
+		printf("+++ Killed by %s +++ (core dumped)\n", signals_get(WTERMSIG(exit_return)));
+	else
+		printf("+++ Killed by %s +++\n", signals_get(WTERMSIG(exit_return)));
+  }
   fflush(stdout);
 }

@@ -3,9 +3,9 @@
 
 int main(int ac, char **av, char **ev)
 {
-  struct stat tmp;
-  char *file;
-  pid_t pid;
+	struct stat tmp;
+	char *file;
+	pid_t pid;
 
   if (ac < 2)
     print_help();
@@ -21,6 +21,9 @@ int main(int ac, char **av, char **ev)
     ft_putstr_fd("\": No such file or directory", 2);
     exit(EXIT_FAILURE);
   }
+    syscalls_init();
+    signals_init();
+    errno_init();
   pid = fork();
   if (pid == -1)
   {
@@ -31,9 +34,6 @@ int main(int ac, char **av, char **ev)
     child_launch(av, file);
   else
   {
-    syscalls_init();
-    signals_init();
-    errno_init();
     parent_launch(pid);
   }
 }
