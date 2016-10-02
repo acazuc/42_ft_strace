@@ -22,7 +22,7 @@ foreach ($lines as $line)
 	{
 		if ($i != 2)
 			echo ", ";
-		if (strstr($tab[$i], "char") !== false && c($tab[$i]) == 1)
+		if (strstr($tab[$i], "char") !== false && c($tab[$i]) == 1 && strstr($tab[$i], "const") !== false)
 			echo "PARAM_STRING";
 		else if (strstr($tab[$i], "*") !== false)
 			echo "PARAM_ADDR";

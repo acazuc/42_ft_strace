@@ -65,19 +65,24 @@ void print_args(int args_nb, struct user_regs_struct *regs, t_syscall syscall)
 		print_arg(regs->rdi, syscall.type[0]);
 		if (args_nb >= 2)
 		{
-			printf(", \033[1;34m%llu\033[0;37m", regs->rsi);
+			printf(", ");
+			print_arg(regs->rsi, syscall.type[1]);
 			if (args_nb >= 3)
 			{
-				printf(", \033[1;34m%llu\033[0;37m", regs->rdx);
+				printf(", ");
+				print_arg(regs->rdx, syscall.type[2]);
 				if (args_nb >= 4)
 				{
-					printf(", \033[1;34m%llu\033[0;37m", regs->rcx);
+					printf(", ");
+					print_arg(regs->rcx, syscall.type[3]);
 					if (args_nb >= 5)
 					{
-						printf(", \033[1;34m%llu\033[0;37m", regs->r8);
+						printf(", ");
+						print_arg(regs->r8, syscall.type[4]);
 						if (args_nb >= 6)
 						{
-							printf(", \033[1;34m%llu\033[0;37m", regs->r9);
+							printf(", ");
+							print_arg(regs->r9, syscall.type[5]);
 						}
 					}
 				}
