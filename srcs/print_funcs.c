@@ -56,7 +56,9 @@ static void print_arg(long val, enum e_syscall_param_type type)
 	}
 	else if (type == PARAM_STRING)
 	{
-		printf("\033[1;34m\"%s\"\033[0;37m", peek_str((void*)val));
+		char *str = peek_str((void*)val);
+		printf("\033[1;34m\"%s\"\033[0;37m", str);
+		free(str);
 	}
 }
 
