@@ -20,7 +20,7 @@ static char *peek_str(void *addr)
 	char	*str;
 	long	tmp;
 
-	if (!(str = malloc(sizeof(*str) * 65)))
+	if (!(str = malloc(sizeof(*str) * 68)))
 	{
 		kill(child_pid, SIGKILL);
 		exit(EXIT_FAILURE);
@@ -39,6 +39,8 @@ static char *peek_str(void *addr)
 		if (contains_zero(tmp))
 			break;
 	}
+	if (count == 64)
+		ft_strcat(str, "...");
 	return (str);
 }
 
