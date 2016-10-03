@@ -7,7 +7,7 @@ static void continue_ptrace(pid_t pid, int sig)
 {
 	int		status;
 
-	if (sig == SIGCONT)
+	if (sig == SIGSTOP)
 	{
 		if (waitpid(pid, &status, WUNTRACED) == -1)
 		{
@@ -25,7 +25,6 @@ static void continue_ptrace(pid_t pid, int sig)
 		return;
 	}
 	ptrace_assert(PTRACE_CONT, pid, NULL, (void*)(unsigned long)sig, "PTRACE_CONT");
-	//ptrace_assert(PTRACE_INTERRUPT, pid, NULL, 0, "PTRACE_INTERRUPT");
 }
 
 void sig_handler(pid_t pid, int sig)
