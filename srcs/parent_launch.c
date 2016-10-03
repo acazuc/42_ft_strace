@@ -32,11 +32,11 @@ int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 static void signal_handler(int sig)
 {
 	(void)sig;
-	printf("Process %d detached", child_pid);
+	printf("\033[0;37mProcess %d detached\n", child_pid);
 	fflush(stdout);
 	kill(child_pid, SIGINT);
-	killed = 1;
 	ptrace_assert(PTRACE_DETACH, child_pid, 0, 0, "PTRACE_DETACH");
+	exit(EXIT_SUCCESS);
 }
 
 void parent_launch(pid_t pid)
