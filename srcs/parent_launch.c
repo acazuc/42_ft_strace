@@ -20,9 +20,8 @@ int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 		}
 		if (WIFSTOPPED(status))
 		{
-			if ((sig = WSTOPSIG(status)) == SIGALRM)
-				sig_handler(pid, sig);
-			else if (WSTOPSIG(status) & 0x80)
+			sig = WSTOPSIG(status);
+			if (sig & 0x80)
 				return (0);
 			else
 				sig_handler(pid, sig);
@@ -64,23 +63,25 @@ void parent_launch(pid_t pid)
 	{
 		if (syscall_wait(pid, &exit_status, &exit_return))
 			break;
-		calling = 1;
 		if (!killed)
 		{
 			ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
 			syscall_id = regs.orig_rax;
 			if (!killed)
 			{
+				calling = 1;
 				printf("\033[1;35m%s\033[1;37m(", syscalls_get_name(syscall_id));
 				args_nb = syscalls_get_args(syscall_id);
 				if (args_nb == 0)
 					printf("void");
 				else
 					print_args(args_nb, &regs, syscalls_get(syscall_id));
+				fflush(stdout);
 				if (syscall_wait(pid, &exit_status, &exit_return))
 					break;
 				if (!killed)
 				{
+					calling = 0;
 					ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
 					printf("\033[1;37m) = ");
 					if ((long long)regs.rax < 0)
@@ -107,4 +108,6 @@ void parent_launch(pid_t pid)
 			printf("+++ Killed by %s +++\n", signals_get(WTERMSIG(exit_return)));
 	}
 	fflush(stdout);
+	if (WIFSIGNALED(exit_return))
+		kill(getpid(), WTERMSIG(exit_return));
 }
