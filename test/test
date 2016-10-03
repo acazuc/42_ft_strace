@@ -10,7 +10,7 @@
 9	sys_mmap	unsigned long addr	unsigned long len	unsigned long prot	unsigned long flags	unsigned long fd	unsigned long off
 10	sys_mprotect	unsigned long start	size_t len	unsigned long prot			
 11	sys_munmap	unsigned long addr	size_t len				
-12	sys_brk	unsigned long brk					
+12	sys_brk	void *brk					
 13	sys_rt_sigaction	int sig	const struct sigaction *act	struct sigaction *oact	size_t sigsetsize		
 14	sys_rt_sigprocmask	int how	sigset_t *nset	sigset_t *oset	size_t sigsetsize		
 15	sys_rt_sigreturn	unsigned long __unused					

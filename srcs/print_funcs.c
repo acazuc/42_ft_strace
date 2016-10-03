@@ -20,26 +20,28 @@ static char *peek_str(void *addr)
 	char	*str;
 	long	tmp;
 
-	if (!(str = malloc(sizeof(*str) * 68)))
+	if (!(str = malloc(sizeof(*str) * 38)))
 	{
 		kill(child_pid, SIGKILL);
 		exit(EXIT_FAILURE);
 	}
-	ft_bzero(str, 65);
+	ft_bzero(str, 38);
+	ft_strcat(str, "\"");
 	count = 0;
-	while (count < 64)
+	while (count < 32)
 	{
 		if ((tmp = ptrace(PTRACE_PEEKDATA, child_pid, addr + count, NULL)) == -1)
 		{
 			kill(child_pid, SIGKILL);
 			exit(EXIT_FAILURE);
 		}
-		ft_memcpy(str + count, &tmp, sizeof(tmp));
+		ft_memcpy(str + 1 + count, &tmp, sizeof(tmp));
 		count += sizeof(long);
 		if (contains_zero(tmp))
 			break;
 	}
-	if (count == 64)
+	ft_strcat(str, "\"");
+	if (count == 32)
 		ft_strcat(str, "...");
 	return (str);
 }
@@ -52,12 +54,15 @@ static void print_arg(long val, enum e_syscall_param_type type)
 	}
 	else if (type == PARAM_ADDR)
 	{
-		printf("\033[1;34m0x%llx\033[0;37m", (unsigned long long)val);
+		if (val == 0)
+			printf("\033[1;34mNULL\033[0;37m");
+		else
+			printf("\033[1;34m0x%llx\033[0;37m", (unsigned long long)val);
 	}
 	else if (type == PARAM_STRING)
 	{
 		char *str = peek_str((void*)val);
-		printf("\033[1;34m\"%s\"\033[0;37m", str);
+		printf("\033[1;34m%s\033[0;37m", str);
 		free(str);
 	}
 }
