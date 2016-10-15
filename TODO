@@ -1,0 +1,2 @@
+exit with child exit signal
+check for -1 on peekdata (cf man 2 ptrace return value)
