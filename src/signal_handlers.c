@@ -6,8 +6,6 @@ static void continue_ptrace(pid_t pid, int sig)
 {
 	int		status;
 
-	if (sig != SIGCONT)
-		ptrace_assert(PTRACE_CONT, pid, NULL, (void*)(unsigned long)sig, "PTRACE_CONT");
 	if (sig == SIGSTOP)
 	{
 		if (waitpid(pid, &status, WUNTRACED) == -1)

@@ -1,7 +1,7 @@
 #ifndef FT_STRACE_H
 # define FT_STRACE_H
 
-# include "../libft/includes/libft.h"
+# include "../libft/include/libft.h"
 # include <sys/ptrace.h>
 # include <unistd.h>
 # include <stdlib.h>

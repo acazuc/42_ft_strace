@@ -16,9 +16,9 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror -Ofast
 
-INCLUDES_PATH = includes/
+INCLUDES_PATH = include/
 
-SRCS_PATH = srcs/
+SRCS_PATH = src/
 
 SRCS_NAME = main.c \
 			print_help.c \
@@ -37,18 +37,18 @@ SRCS_NAME = main.c \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
-OBJS_PATH = objs/
+OBJS_PATH = obj/
 
 OBJS_NAME = $(SRCS_NAME:.c=.o)
 
 OBJS = $(addprefix $(OBJS_PATH), $(OBJS_NAME))
 
-LIBRARY = -L libft/ -lft
+LIBRARY = -L libft -lft
 
 all: odir $(NAME)
 
 $(NAME): $(OBJS)
-	@make -C libft/
+	@make -C libft
 	@echo " - Making $(NAME)"
 	@$(CC) $(CFLAGS) -o $(NAME) $^ $(LIBRARY)
 
@@ -60,12 +60,12 @@ odir:
 	@mkdir -p $(OBJS_PATH)
 
 clean:
-	@make -C libft/ clean
+	@make -C libft clean
 	@echo " - Cleaning objs"
 	@rm -f $(OBJS)
 
 fclean: clean
-	@make -C libft/ fclean
+	@make -C libft fclean
 	@echo " - Cleaning executable"
 	@rm -f $(NAME)
 

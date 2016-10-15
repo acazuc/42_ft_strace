@@ -7,9 +7,9 @@
 6	sys_lstat	fconst char *filename	struct stat *statbuf				
 7	sys_poll	struct poll_fd *ufds	unsigned int nfds	long timeout_msecs			
 8	sys_lseek	unsigned int fd	off_t offset	unsigned int origin			
-9	sys_mmap	unsigned long addr	unsigned long len	unsigned long prot	unsigned long flags	unsigned long fd	unsigned long off
-10	sys_mprotect	unsigned long start	size_t len	unsigned long prot			
-11	sys_munmap	unsigned long addr	size_t len				
+9	sys_mmap	void *addr	unsigned long len	unsigned long prot	unsigned long flags	unsigned long fd	unsigned long off
+10	sys_mprotect	void *start	size_t len	unsigned long prot			
+11	sys_munmap	void *addr	size_t len				
 12	sys_brk	void *brk					
 13	sys_rt_sigaction	int sig	const struct sigaction *act	struct sigaction *oact	size_t sigsetsize		
 14	sys_rt_sigprocmask	int how	sigset_t *nset	sigset_t *oset	size_t sigsetsize		

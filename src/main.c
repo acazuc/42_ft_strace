@@ -33,4 +33,5 @@ int main(int ac, char **av, char **ev)
 		child_launch(av, file);
 	else
 		parent_launch(pid);
+	return (EXIT_SUCCESS);
 }

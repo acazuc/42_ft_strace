@@ -6,12 +6,13 @@ int killed = 0;
 int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 {
 	int status;
-	int sig;
+	int sig = 0;
 
 	while (1)
 	{
-		ptrace(PTRACE_SYSCALL, pid, 0, 0);
+		ptrace(PTRACE_SYSCALL, pid, 0, sig);
 		wait(&status);
+		sig = 0;
 		if (WIFEXITED(status) || WIFSIGNALED(status))
 		{
 			*exit_return = status;
@@ -32,7 +33,7 @@ int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 static void signal_handler(int sig)
 {
 	(void)sig;
-	printf("\033[0;37mProcess %d detached\n", child_pid);
+	printf("\033[0mProcess %d detached\n", child_pid);
 	fflush(stdout);
 	kill(child_pid, SIGINT);
 	ptrace_assert(PTRACE_DETACH, child_pid, 0, 0, "PTRACE_DETACH");
@@ -107,6 +108,7 @@ void parent_launch(pid_t pid)
 		else
 			printf("+++ Killed by %s +++\n", signals_get(WTERMSIG(exit_return)));
 	}
+	printf("\033[0m");
 	fflush(stdout);
 	if (WIFSIGNALED(exit_return))
 		kill(getpid(), WTERMSIG(exit_return));
