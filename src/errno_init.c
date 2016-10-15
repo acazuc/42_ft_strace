@@ -140,6 +140,7 @@ void errno_init(void)
 {513, "ERESTARTNOINTR", "N/A"},
 {514, "ERESTARTNOHAND", "restart if no handler.."},
 {515, "ENOIOCTLCMD", "No ioctl command"},
+{516, "ERESTART_RESTARTBLOCK", "restart by calling sys_restart_syscall"},
 {517, "EPROBE_DEFER", "Driver requests probe retry"},
 {518, "EOPENSTALE", "open found a stale dentry"},
 {521, "EBADHANDLE", "Illegal NFS file handle"},
