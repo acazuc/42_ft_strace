@@ -5,13 +5,23 @@ int killed = 0;
 
 int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 {
+	sigset_t empty;
+	sigset_t blocker;
 	int status;
 	int sig = 0;
 
+	sigemptyset(&empty);
+	sigaddset(&blocker, SIGHUP);
+	sigaddset(&blocker, SIGINT);
+	sigaddset(&blocker, SIGQUIT);
+	sigaddset(&blocker, SIGPIPE);
+	sigaddset(&blocker, SIGTERM);
 	while (1)
 	{
 		ptrace(PTRACE_SYSCALL, pid, 0, sig);
-		wait(&status);
+		sigprocmask(SIG_SETMASK, &empty, NULL);
+		waitpid(child_pid, &status, 0);
+		sigprocmask(SIG_BLOCK, &blocker, NULL);
 		sig = 0;
 		if (WIFEXITED(status) || WIFSIGNALED(status))
 		{
