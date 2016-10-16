@@ -11,7 +11,6 @@
 # include <sys/user.h>
 # include <sys/reg.h>
 # include <stdio.h>
-# include <errno.h>
 
 typedef struct s_syscall t_syscall;
 typedef struct s_signal t_signal;

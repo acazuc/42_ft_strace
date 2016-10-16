@@ -1,4 +1,5 @@
 #include "ft_strace.h"
+#include <errno.h>
 
 pid_t	child_pid;
 
