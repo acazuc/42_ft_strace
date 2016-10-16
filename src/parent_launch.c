@@ -121,5 +121,7 @@ void parent_launch(pid_t pid)
 	printf("\033[0m");
 	fflush(stdout);
 	if (WIFSIGNALED(exit_return))
+	{
 		kill(getpid(), WTERMSIG(exit_return));
+	}
 }
