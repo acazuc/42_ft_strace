@@ -122,8 +122,6 @@ void parent_launch(pid_t pid)
 	fflush(stdout);
 	if (WIFSIGNALED(exit_return))
 	{
-		char *kek = NULL;
-		printf("%c\n", kek[0]);
 		kill(getpid(), WTERMSIG(exit_return));
 	}
 }
