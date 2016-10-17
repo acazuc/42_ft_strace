@@ -1,4 +1,5 @@
 #include "ft_strace.h"
+#include <errno.h>
 
 pid_t	child_pid;
 
@@ -30,7 +31,8 @@ static char *peek_str(void *addr)
 	count = 0;
 	while (count < 32)
 	{
-		if ((tmp = ptrace(PTRACE_PEEKDATA, child_pid, addr + count, NULL)) == -1)
+		errno = 0;
+		if ((tmp = ptrace(PTRACE_PEEKDATA, child_pid, addr + count, NULL)) == -1 && errno)
 		{
 			kill(child_pid, SIGKILL);
 			exit(EXIT_FAILURE);

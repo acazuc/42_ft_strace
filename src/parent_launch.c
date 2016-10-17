@@ -102,7 +102,7 @@ void parent_launch(pid_t pid)
 					ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
 					printf("\033[1;37m) = ");
 					if ((long long)regs.rax < 0)
-						printf("\033[1;31m%d %s (%s)", -1, errno_get_name(-regs.rax), errno_get_desc(-regs.rax));
+						printf("\033[1;31m%d %s (%s)", -1, errno_get_name((int)-regs.rax), errno_get_desc((int)-regs.rax));
 					else
 						printf("\033[1;32m%llu", regs.rax);
 					printf("\033[0;37m\n");
@@ -128,5 +128,7 @@ void parent_launch(pid_t pid)
 	printf("\033[0m");
 	fflush(stdout);
 	if (WIFSIGNALED(exit_return))
+	{
 		kill(getpid(), WTERMSIG(exit_return));
+	}
 }
