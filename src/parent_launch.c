@@ -3,14 +3,20 @@
 pid_t child_pid;
 int killed = 0;
 
-int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
+static void setemptyset()
 {
 	sigset_t empty;
+
+	sigemptyset(&empty);
+	sigprocmask(SIG_SETMASK, &empty, NULL);
+}
+
+static int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
+{
 	sigset_t blocker;
 	int status;
 	int sig = 0;
 
-	sigemptyset(&empty);
 	sigaddset(&blocker, SIGHUP);
 	sigaddset(&blocker, SIGINT);
 	sigaddset(&blocker, SIGQUIT);
@@ -19,7 +25,7 @@ int syscall_wait(pid_t pid, int *exit_status, int *exit_return)
 	while (1)
 	{
 		ptrace(PTRACE_SYSCALL, pid, 0, sig);
-		sigprocmask(SIG_SETMASK, &empty, NULL);
+		setemptyset();
 		waitpid(child_pid, &status, 0);
 		sigprocmask(SIG_BLOCK, &blocker, NULL);
 		sig = 0;
@@ -105,6 +111,7 @@ void parent_launch(pid_t pid)
 			}
 		}
 	}
+	setemptyset();
 	if (killed)
 		return;
 	if (calling)
