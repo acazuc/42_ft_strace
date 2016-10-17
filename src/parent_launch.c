@@ -117,7 +117,10 @@ void parent_launch(pid_t pid)
 	if (calling)
 		printf("\033[1;37m) = ?\n");
 	if (WIFEXITED(exit_return))
+	{
 		printf("+++ exited with %d +++\n", exit_status);
+		exit(exit_status);
+	}
 	else if (WIFSIGNALED(exit_return))
 	{
 		if (WCOREDUMP(exit_return))
