@@ -87,7 +87,7 @@ void parent_launch(pid_t pid)
 			if (!killed)
 			{
 				calling = 1;
-				printf("\033[1;35m%s\033[1;37m(", syscalls_get_name(syscall_id));
+				printf("\033[1;35m%s\033[0m(", syscalls_get_name(syscall_id));
 				args_nb = syscalls_get_args(syscall_id);
 				if (args_nb == 0)
 					printf("void");
@@ -105,7 +105,7 @@ void parent_launch(pid_t pid)
 						printf("\033[1;31m%d %s (%s)", -1, errno_get_name((int)-regs.rax), errno_get_desc((int)-regs.rax));
 					else
 						printf("\033[1;32m%llu", regs.rax);
-					printf("\033[0;37m\n");
+					printf("\033[0m\n");
 					fflush(stdout);
 				}
 			}
@@ -118,7 +118,7 @@ void parent_launch(pid_t pid)
 		printf("\033[1;37m) = ?\n");
 	if (WIFEXITED(exit_return))
 	{
-		printf("+++ exited with %d +++\n", exit_status);
+		printf("+++ exited with %d +++\n\033[0m", exit_status);
 		exit(exit_status);
 	}
 	else if (WIFSIGNALED(exit_return))
@@ -127,11 +127,11 @@ void parent_launch(pid_t pid)
 			printf("+++ Killed by %s +++ (core dumped)\n", signals_get(WTERMSIG(exit_return)));
 		else
 			printf("+++ Killed by %s +++\n", signals_get(WTERMSIG(exit_return)));
+		printf("\033[0m");
+		fflush(stdout);
+		kill(getpid(), WTERMSIG(exit_return));
+		return;
 	}
 	printf("\033[0m");
 	fflush(stdout);
-	if (WIFSIGNALED(exit_return))
-	{
-		kill(getpid(), WTERMSIG(exit_return));
-	}
 }
