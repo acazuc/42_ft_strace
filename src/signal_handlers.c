@@ -34,6 +34,6 @@ void sig_handler(pid_t pid, int sig)
 	ptrace_assert(PTRACE_GETSIGINFO, pid, NULL, &siginfo, "PTRACE_GETSIGINFO");
 	printf("\033[1;37m--- ");
 	printf("%s", signals_get(sig));
-	printf(" { si_signo=%s, si_code=%d, si_pid=%d, si_uid=%d} ---\n", signals_get(sig), siginfo.si_code, siginfo.si_pid, siginfo.si_uid);
+	printf(" { si_signo=%s, si_code=%d, si_pid=%d, si_uid=%d, si_value=%d, si_addr=0x%llx} ---\n", signals_get(sig), siginfo.si_code, siginfo.si_pid, siginfo.si_uid, siginfo.si_value.sival_int, (unsigned long long)siginfo.si_addr);
 	continue_ptrace(pid, sig);
 }
