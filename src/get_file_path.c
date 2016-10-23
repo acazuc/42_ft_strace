@@ -21,7 +21,7 @@ char *get_file_path(char *file, char **ev)
 	}
 	if (!tmp)
 		tmp = "/bin:/usr/bin";
-		if (!(path = ft_strsplit(tmp, ':')))
+	if (!(path = ft_strsplit(tmp, ':')))
 	{
 		ft_putendl_fd("Can't split path", 2);
 		exit(EXIT_FAILURE);

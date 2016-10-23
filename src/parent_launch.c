@@ -65,6 +65,7 @@ void parent_launch(pid_t pid)
 	int syscall_id;
 	int args_nb;
 	int status;
+	int floop = 0;
 
 	child_pid = pid;
 	calling = 0;
@@ -87,29 +88,35 @@ void parent_launch(pid_t pid)
 			if (!killed)
 			{
 				calling = 1;
-				printf("\033[1;35m%s\033[0m(", syscalls_get_name(syscall_id));
-				args_nb = syscalls_get_args(syscall_id);
-				if (args_nb == 0)
-					printf("void");
-				else
-					print_args(args_nb, &regs, syscalls_get(syscall_id));
-				fflush(stdout);
+				if (floop)
+				{
+					printf("\033[1;35m%s\033[0m(", syscalls_get_name(syscall_id));
+					args_nb = syscalls_get_args(syscall_id);
+					if (args_nb == 0)
+						printf("void");
+					else
+						print_args(args_nb, &regs, syscalls_get(syscall_id));
+					fflush(stdout);
+				}
 				if (syscall_wait(pid, &exit_status, &exit_return))
 					break;
 				if (!killed)
 				{
 					calling = 0;
 					ptrace_assert(PTRACE_GETREGS, pid, 0, &regs, "PTRACE_GETREGSET");
-					printf("\033[1;37m) = ");
-					if ((long long)regs.rax < 0)
-						printf("\033[1;31m%d %s (%s)", -1, errno_get_name((int)-regs.rax), errno_get_desc((int)-regs.rax));
-					else
-						printf("\033[1;32m%llu", regs.rax);
-					printf("\033[0m\n");
+					if (floop)
+					{printf("\033[1;37m) = ");
+						if ((long long)regs.rax < 0)
+							printf("\033[1;31m%d %s (%s)", -1, errno_get_name((int)-regs.rax), errno_get_desc((int)-regs.rax));
+						else
+							printf("\033[1;32m%llu", regs.rax);
+						printf("\033[0m\n");
+					}
 					fflush(stdout);
 				}
 			}
 		}
+		floop = 1;
 	}
 	setemptyset();
 	if (killed)
